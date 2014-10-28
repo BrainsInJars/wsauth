@@ -36,13 +36,13 @@ local authenticate = function(request)
 	local secret = storage["key:"..key]
 	local result = crypto.hmac(secret, query, crypto.sha256).hexdigest()
 
-	log(sig, result)
+	log(sig, result, sig == result)
 
-	if sig ~= result then
+	if not (sig == result) then
 		return False;
 	end
-	storage["nonce:"..key] = curr_nonce
 
+	storage["nonce:"..key] = curr_nonce;
 	return True;
 end
 
