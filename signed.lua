@@ -21,7 +21,7 @@ local authenticate = function(request)
 	local curr_nonce = tonumber(request.query["nonce"])
 	local prev_nonce = tonumber(storage["nonce:"..key])
 
-	if curr_nonce == nil or prev_nonce == nil:
+	if curr_nonce == nil or prev_nonce == nil then
 		return False;
 
 	if not (curr_nonce > prev_nonce) then
