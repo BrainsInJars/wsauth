@@ -36,7 +36,7 @@ local authenticate = function(request)
 	local secret = storage["key:"..key]
 	local result = crypto.hmac(secret, query, crypto.sha256).hexdigest()
 
-	log(result)
+	log(sig, result)
 
 	if sig ~= result then
 		return False;
