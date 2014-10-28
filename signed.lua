@@ -14,36 +14,25 @@ local authenticate = function(request)
 	local key = request.headers["Key"];
 	local sig = request.headers["Sign"];
 
-	log(query, key, sig)
-
-	if key == nil or sig == nil then
-		return False;
-	end
-
 	local curr_nonce = tonumber(request.query["nonce"])
 	local prev_nonce = tonumber(storage["nonce:"..key])
-
-	log(curr_nonce, prev_nonce);
-
-	if curr_nonce == nil or prev_nonce == nil then
-		return False;
-	end
-
-	if not (curr_nonce > prev_nonce) then
-		return False;
-	end
 
 	local secret = storage["key:"..key]
 	local result = crypto.hmac(secret, query, crypto.sha256).hexdigest()
 
-	log(sig, result, sig == result)
-
-	if not (sig == result) then
-		return False;
+	if (key ~= nil) and (sig ~= nil) and (curr_nonce ~= nil) and (prev_nonce ~= nil) then
+		if (curr_nonce > prev_nonce) and (sig == result) then
+			log("Auth: Request successfully verified");
+			storage["nonce:"..key] = curr_nonce;
+			return true;
+		else
+			log("Auth: Current nonce is not greater then previous nonce");
+		end
+	else
+		log("Auth: Missing Sig, Key http headers or nonce parameter");
 	end
 
-	storage["nonce:"..key] = curr_nonce;
-	return True;
+	return false
 end
 
 return {
