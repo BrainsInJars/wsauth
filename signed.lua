@@ -14,7 +14,7 @@ local authenticate = function(request)
 	local key = request.headers["Key"];
 	local sig = request.headers["Sign"];
 
-	log(query, key, string)
+	log(query, key, sig)
 
 	if key == nil or sig == nil then
 		return False;
