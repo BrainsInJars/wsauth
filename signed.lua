@@ -9,10 +9,12 @@ local delete_user = function(key)
 end
 
 local authenticate = function(request)
-	local query=request.path.."?"..request.querystring;
+	local query = request.path.."?"..request.querystring;
 
 	local key = request.headers["Key"];
 	local sig = request.headers["Sign"];
+
+	log(query, key, string)
 
 	if key == nil or sig == nil then
 		return False;
@@ -20,6 +22,8 @@ local authenticate = function(request)
 
 	local curr_nonce = tonumber(request.query["nonce"])
 	local prev_nonce = tonumber(storage["nonce:"..key])
+
+	log(curr_nonce, prev_nonce);
 
 	if curr_nonce == nil or prev_nonce == nil then
 		return False;
@@ -29,14 +33,15 @@ local authenticate = function(request)
 		return False;
 	end
 
-	storage["nonce:"..key] = curr_nonce
-
 	local secret = storage["key:"..key]
 	local result = crypto.hmac(secret, query, crypto.sha256).hexdigest()
+
+	log(result)
 
 	if sig ~= result then
 		return False;
 	end
+	storage["nonce:"..key] = curr_nonce
 
 	return True;
 end
