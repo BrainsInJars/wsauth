@@ -23,6 +23,7 @@ local authenticate = function(request)
 
 	if curr_nonce == nil or prev_nonce == nil then
 		return False;
+	end
 
 	if not (curr_nonce > prev_nonce) then
 		return False;
